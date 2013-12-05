@@ -30,6 +30,7 @@ import java.util.HashSet;
 import javax.xml.XMLConstants;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.css.CSSCheckerFactory;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.XRefChecker;
@@ -180,7 +181,7 @@ public class OPSHandler implements XMLHandler {
 				report.warning(path, parser.getLineNumber(),
 						parser.getColumnNumber(),
 						"use of non-registered URI scheme type in href: "
-								+ href);
+								+ href, ReportEnum.WARN_URI_SCHEMA_NOT_REGISTERED);
 				return;			
 		}
 		
@@ -188,7 +189,7 @@ public class OPSHandler implements XMLHandler {
 			href = PathUtil.resolveRelativeReference(path, href, base);
 		} catch (IllegalArgumentException err) {
 			report.error(path, parser.getLineNumber(),
-					parser.getColumnNumber(), err.getMessage());
+					parser.getColumnNumber(), err.getMessage(), ReportEnum.ERR_EXCEPTION);
 			return;
 		}
 		if (xrefChecker != null)

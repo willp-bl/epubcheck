@@ -25,6 +25,7 @@ package com.adobe.epubcheck.util;
 import java.util.ArrayList;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 
 public class ValidationReport implements Report {
 
@@ -72,14 +73,14 @@ public class ValidationReport implements Report {
         hintList = new ArrayList<ItemReport>();
 	}
 
-	public void error(String resource, int line, int column, String message) {
+	public void error(String resource, int line, int column, String message, ReportEnum e) {
 		errorCount++;
 		ItemReport item = new ItemReport(resource, line, column,
 				fixMessage(message));
 		errorList.add(item);
 	}
 
-	public void warning(String resource, int line, int column, String message) {
+	public void warning(String resource, int line, int column, String message, ReportEnum e) {
 		warningCount++;
 		ItemReport item = new ItemReport(resource, line, column,
 				fixMessage(message));

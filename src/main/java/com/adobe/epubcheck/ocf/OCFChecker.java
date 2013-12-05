@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.opf.OPFChecker;
 import com.adobe.epubcheck.opf.OPFChecker30;
 import com.adobe.epubcheck.opf.OPFData;
@@ -112,7 +113,7 @@ public class OCFChecker {
 
 		if (!ocf.hasEntry(OCFData.containerEntry)) {
 			report.error(null, 0, 0,
-					"Required META-INF/container.xml resource is missing");
+					"Required META-INF/container.xml resource is missing", ReportEnum.ERR_FILE_MISSING);
 			return;
 		}
 		long l = ocf.getTimeEntry(OCFData.containerEntry);
@@ -128,7 +129,7 @@ public class OCFChecker {
 		
 		if (opfPaths==null || opfPaths.isEmpty()) {
 			report.error(OCFData.containerEntry, -1, -1,
-					"No rootfile with media type 'application/oebps-package+xml'");
+					"No rootfile with media type 'application/oebps-package+xml'", ReportEnum.ERR_OCF_NO_OEBPS_PACKAGE_FILE);
 			return;
 			
 		} else if (opfPaths.size()>0) {
@@ -169,18 +170,18 @@ public class OCFChecker {
 					opfPaths.get(0));
 			detectedVersion = opfData.getVersion();
 		} catch (InvalidVersionException e) {
-			report.error(opfPaths.get(0), -1, -1, e.getMessage());
+			report.error(opfPaths.get(0), -1, -1, e.getMessage(), ReportEnum.ERR_EXCEPTION);
 			return;
 		} catch (IOException e1) {
 			// missing file will be reported later
 		}
 		if (version == null && detectedVersion == null) {
 			report.warning(opfPaths.get(0),-1,-1,
-					String.format(Messages.VERSION_NOT_FOUND, EPUBVersion.VERSION_3));
+					String.format(Messages.VERSION_NOT_FOUND, EPUBVersion.VERSION_3), ReportEnum.WARN_EPUB_VERSION_NOT_FOUND);
 			validationVersion = EPUBVersion.VERSION_3;
 		} else if (version != null && version != detectedVersion) {
 			report.warning(opfPaths.get(0), -1, -1, 
-					String.format(Messages.VERSION_MISMATCH, version, detectedVersion));
+					String.format(Messages.VERSION_MISMATCH, version, detectedVersion), ReportEnum.WARN_EPUB_VERSION_MISMATCH);
 			validationVersion = version;
 		} else {
 			validationVersion = detectedVersion;
@@ -188,7 +189,7 @@ public class OCFChecker {
 		
 		// EPUB 2.0 says there SHOULD be only one OPS rendition
 		if (validationVersion == EPUBVersion.VERSION_2 && opfPaths.size()>1) {
-			report.warning(null, -1, -1, Messages.MULTIPLE_OPS_RENDITIONS);
+			report.warning(null, -1, -1, Messages.MULTIPLE_OPS_RENDITIONS, ReportEnum.WARN_OCF_MULTIPLE_OPS);
 		}
 
 		
@@ -201,7 +202,7 @@ public class OCFChecker {
 					&& !CheckUtil.checkTrailingSpaces(mimetype,
 							validationVersion, sb))
 				report.error("mimetype", 0, 0,
-						"Mimetype file should contain only the string \"application/epub+zip\".");
+						"Mimetype file should contain only the string \"application/epub+zip\".", ReportEnum.ERR_MIMETYPE_INCORRECT);
 			if (sb.length() != 0) {
 				report.info(null, FeatureEnum.FORMAT_NAME, sb.toString().trim());
 			}
@@ -223,7 +224,7 @@ public class OCFChecker {
 		for (String opfPath : opfPaths) {
 			if (!ocf.hasEntry(opfPath)) {
 				report.error(OCFData.containerEntry, -1, -1,
-						"Entry '" + opfPath + "' not found in the container.");
+						"Entry '" + opfPath + "' not found in the container.", ReportEnum.ERR_FILE_MISSING);
 			} else {
 				OPFChecker opfChecker;
 
@@ -247,9 +248,9 @@ public class OCFChecker {
 			Set<String> normalizedEntriesSet = new HashSet<String>();
 			for (String entry : ocf.getEntries()) {
 				if (!entriesSet.add(entry.toLowerCase(Locale.ENGLISH))) {
-					report.error(null, -1, -1, "Duplicate entry in the ZIP file: "+entry);
+					report.error(null, -1, -1, "Duplicate entry in the ZIP file: "+entry, ReportEnum.ERR_FILE_DUPLICATE_IN_ZIP);
 				} else if (!normalizedEntriesSet.add(Normalizer.normalize(entry, Form.NFC))) {
-					report.warning(null, -1, -1, "Duplicate entry in the ZIP file (after Unicode NFC normalization): "+entry);
+					report.warning(null, -1, -1, "Duplicate entry in the ZIP file (after Unicode NFC normalization): "+entry, ReportEnum.ERR_FILE_DUPLICATE_IN_ZIP);
 				}
 			}
 			
@@ -269,7 +270,7 @@ public class OCFChecker {
 					if (!isDeclared)
 						report.warning(null,-1,-1,
 								"item ("+ entry
-										+ ") exists in the zip file, but is not declared in the OPF file");
+										+ ") exists in the zip file, but is not declared in the OPF file", ReportEnum.ERR_OPF_HAS_NO_ENTRY_FOR_FILE);
 				}
 				OCFFilenameChecker.checkCompatiblyEscaped(entry, report, validationVersion);
 			}
@@ -284,13 +285,13 @@ public class OCFChecker {
 				}
 				if (!hasContents) {
 					report.warning(null, -1, -1,
-							"zip file contains empty directory " + directory);
+							"zip file contains empty directory " + directory, ReportEnum.WARN_EMPTY_DIRECTORY);
 				}
 
 			}
 
 		} catch (IOException e) {
-			report.error(null, -1, -1, "Unable to read zip file entries.");
+			report.error(null, -1, -1, "Unable to read zip file entries.", ReportEnum.ERR_IO);
 		}
 		
 	}
@@ -366,7 +367,7 @@ public class OCFChecker {
 				rootBase = rootPath;
 			return rootBase;
 		} else {
-		    report.error(null,  0, 0, "RootPath is not an OPF file");
+		    report.error(null,  0, 0, "RootPath is not an OPF file", ReportEnum.ERR_ROOTPATH_NOT_AN_OPF_FILE);
 			//System.out.println("RootPath is not an OPF file");
 			return null;
 		}

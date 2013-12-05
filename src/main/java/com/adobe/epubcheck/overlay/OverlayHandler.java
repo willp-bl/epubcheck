@@ -3,6 +3,7 @@ package com.adobe.epubcheck.overlay;
 import java.util.HashSet;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.opf.OPFChecker30;
 import com.adobe.epubcheck.opf.XRefChecker;
 import com.adobe.epubcheck.util.EpubTypeAttributes;
@@ -63,7 +64,7 @@ public class OverlayHandler implements XMLHandler {
 		prefix = prefix.trim();
 		if (!prefixSet.contains(prefix)) {
 			report.error(path, parser.getLineNumber(),
-					parser.getColumnNumber(), "Undecleared prefix: " + prefix);
+					parser.getColumnNumber(), "Undecleared prefix: " + prefix, ReportEnum.ERR_XML_UNDECLARED_PREFIX);
 			return false;
 		}
 		return true;
@@ -92,7 +93,7 @@ public class OverlayHandler implements XMLHandler {
 					report.error(path, parser.getLineNumber(),
 							parser.getColumnNumber(),
 							"Media Overlay audio refernence " + ref
-									+ " to non-standard audio type " + mimeType);
+									+ " to non-standard audio type " + mimeType, ReportEnum.ERR_AUDIO_NON_STANDARD_TYPE);
 			}
 			xrefChecker.registerReference(path, parser.getLineNumber(),
 					parser.getColumnNumber(), ref, type);

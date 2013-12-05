@@ -3,6 +3,7 @@ package com.adobe.epubcheck.ocf;
 import java.util.HashSet;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.util.EPUBVersion;
 import com.adobe.epubcheck.util.Messages;
 
@@ -36,7 +37,7 @@ public final class OCFFilenameChecker {
 		String test = checkNonAsciiFilename(str, report);
 
 		if (str.endsWith(".")) {
-			report.error(str, 0, 0, Messages.FILENAME_ENDS_IN_DOT);
+			report.error(str, 0, 0, Messages.FILENAME_ENDS_IN_DOT, ReportEnum.ERR_FILENAME_ENDS_WITH_DOT);
 			test += ".";
 		}
 
@@ -61,10 +62,10 @@ public final class OCFFilenameChecker {
 		if (result.length() > 1) {
 			result = result.substring(0, result.length() - 1);
 			report.error(str, 0, 0, Messages.FILENAME_DISALLOWED_CHARACTERS
-					+ result);
+					+ result, ReportEnum.ERR_FILENAME_CONTAINS_DISSALLOWED_CHARS);
 		}
 		if (spaces)
-			report.warning(str, 0, 0, Messages.SPACES_IN_FILENAME);
+			report.warning(str, 0, 0, Messages.SPACES_IN_FILENAME, ReportEnum.WARN_FILENAME_CONTAINS_SPACES);
 		
 		if (version == EPUBVersion.VERSION_3) {
 			checkCompatiblyEscaped30(str, test, report);
@@ -78,7 +79,7 @@ public final class OCFFilenameChecker {
 		String nonAscii = str.replaceAll("[\\p{ASCII}]", "");
 		if (nonAscii.length() > 0)
 			report.warning(str, 0, 0,
-					String.format(Messages.FILENAME_NON_ASCII, nonAscii));
+					String.format(Messages.FILENAME_NON_ASCII, nonAscii), ReportEnum.WARN_FILENAME_NOT_ASCII);
 		return nonAscii; 
 		
 	}
@@ -107,7 +108,7 @@ public final class OCFFilenameChecker {
 		if (result.length() > 1) {
 			result = result.substring(0, result.length() - 1);
 			report.error(str, 0, 0, Messages.FILENAME_DISALLOWED_CHARACTERS
-					+ result);
+					+ result, ReportEnum.ERR_FILENAME_CONTAINS_DISSALLOWED_CHARS);
 		}
 		return test;
 	}

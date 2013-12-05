@@ -155,10 +155,10 @@ public class EpubCheck implements DocumentValidator {
 				if(!extension.equals("epub")) {
 					if(extension.matches("[Ee][Pp][Uu][Bb]")){
 						report.warning(epubFile.getName(), -1, -1, 
-							"Use only lowercase characters for the EPUB file extension for maximum compatibility");
+							"Use only lowercase characters for the EPUB file extension for maximum compatibility", ReportEnum.WARN_EXT_USE_LOWERCASE);
 					} else {
 						report.warning(epubFile.getName(), -1, -1, 
-							"Uncommon EPUB file extension'" + extension + "'. For maximum compatibility, use '.epub'");
+							"Uncommon EPUB file extension'" + extension + "'. For maximum compatibility, use '.epub'", ReportEnum.WARN_EXT_UNCOMMON);
 					}
 				}
 			}
@@ -179,22 +179,22 @@ public class EpubCheck implements DocumentValidator {
 				}
 			}
 			if (readCount != header.length) {
-				report.error(null, 0, 0, Messages.CANNOT_READ_HEADER);
+				report.error(null, 0, 0, Messages.CANNOT_READ_HEADER, ReportEnum.ERR_HEADER_READ_ERROR);
 			} else {
 				int extsize = getIntFromBytes(header, 28);
 
 				if (header[0] != 'P' && header[1] != 'K') {
-					report.error(null, 0, 0, Messages.CORRUPTED_ZIP_HEADER);
+					report.error(null, 0, 0, Messages.CORRUPTED_ZIP_HEADER, ReportEnum.ERR_HEADER_ZIP_CORRUPT);
 				} else if (!CheckUtil.checkString(header, 30, "mimetype")) {
-					report.error(null, 0, 0, Messages.MIMETYPE_ENTRY_MISSING);
+					report.error(null, 0, 0, Messages.MIMETYPE_ENTRY_MISSING, ReportEnum.ERR_MIMETYPE_MISSING);
 				} else if (extsize != 0) {
 					report.error(null, 0, 0,
-							String.format(Messages.EXTRA_FIELD_LENGTH, extsize));
+							String.format(Messages.EXTRA_FIELD_LENGTH, extsize), ReportEnum.ERR_MIMETYPE_TOO_LONG);
 				} else if (!CheckUtil.checkString(header, 38,
 						"application/epub+zip")) {
 					report.error(null, 0, 0, String.format(
 							Messages.MIMETYPE_WRONG_TYPE,
-							"application/epub+zip"));
+							"application/epub+zip"), ReportEnum.ERR_MIMETYPE_INCORRECT);
 				}
 			}
 		
@@ -208,7 +208,7 @@ public class EpubCheck implements DocumentValidator {
 			
 		} catch (IOException e) {
 			report.error(null, 0, 0,
-					String.format(Messages.IO_ERROR, e.getMessage()));
+					String.format(Messages.IO_ERROR, e.getMessage()), ReportEnum.ERR_IO);
 		} finally {
 			try{
 				epubIn.close();

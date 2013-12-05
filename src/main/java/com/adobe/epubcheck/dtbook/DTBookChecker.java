@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.opf.XRefChecker;
@@ -59,10 +60,10 @@ public class DTBookChecker implements ContentChecker {
 
 	public void runChecks() {
 		if (!ocf.hasEntry(path))
-			report.error(null, 0, 0, "DTBook file " + path + " is missing");
+			report.error(null, 0, 0, "DTBook file " + path + " is missing", ReportEnum.ERR_FILE_MISSING);
 		else if (!ocf.canDecrypt(path))
 			report.error(null, 0, 0, "DTBook file " + path
-					+ " cannot be decrypted");
+					+ " cannot be decrypted", ReportEnum.ERR_FILE_ENCRYPTED);
 		else {
 			XMLParser dtbookParser = null;
 			InputStream in = null;

@@ -42,7 +42,7 @@ public interface Report {
 	 * @param message
 	 *            error message.
 	 */
-	public void error(String resource, int line, int column, String message);
+	public void error(String resource, int line, int column, String message, ReportEnum e);
 
 	/**
 	 * Called when some notable issue is found in the epub.
@@ -57,7 +57,7 @@ public interface Report {
 	 * @param message
 	 *            warning message.
 	 */
-	public void warning(String resource, int line, int column, String message);
+	public void warning(String resource, int line, int column, String message, ReportEnum e);
 
 	public void exception(String resource, Exception e);
 

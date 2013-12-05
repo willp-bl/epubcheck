@@ -28,6 +28,7 @@ import org.idpf.epubcheck.util.css.CssParser;
 import org.idpf.epubcheck.util.css.CssSource;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.opf.XRefChecker;
@@ -86,7 +87,7 @@ public class CSSChecker implements ContentChecker {
 		try {
 			
 			if (this.mode == Mode.FILE && !ocf.hasEntry(path)) {
-				report.error(null, 0, 0, String.format(Messages.MISSING_FILE, path));
+				report.error(null, 0, 0, String.format(Messages.MISSING_FILE, path), ReportEnum.ERR_FILE_MISSING);
 				return;
 			}
 									
@@ -96,13 +97,13 @@ public class CSSChecker implements ContentChecker {
 				if(source.getInputStream().getBomCharset().isPresent()) {
 					charset = source.getInputStream().getBomCharset().get().toLowerCase();					
 					if(!charset.equals("utf-8") && !charset.startsWith("utf-16")) {
-						report.error(path, -1, -1, String.format(Messages.UTF_NOT_SUPPORTED_BOM, charset));
+						report.error(path, -1, -1, String.format(Messages.UTF_NOT_SUPPORTED_BOM, charset), ReportEnum.ERR_TEXT_ENCODING_UNSUPPORTED);
 					}
 				}				
 				if(source.getInputStream().getCssCharset().isPresent()) {
 					charset = source.getInputStream().getCssCharset().get().toLowerCase();
 					if(!charset.equals("utf-8") && !charset.startsWith("utf-16")) {
-						report.error(path, 0, 0, String.format(Messages.UTF_NOT_SUPPORTED, charset));
+						report.error(path, 0, 0, String.format(Messages.UTF_NOT_SUPPORTED, charset), ReportEnum.ERR_TEXT_ENCODING_UNSUPPORTED);
 					}
 				}
 			} // Mode.FILE
@@ -128,7 +129,7 @@ public class CSSChecker implements ContentChecker {
 			}
 						
 		} catch (Exception e) {
-			report.error(path, -1, 0, e.getMessage());
+			report.error(path, -1, 0, e.getMessage(), ReportEnum.ERR_EXCEPTION);
 		} finally {						
 			if(source != null) {
 				try{

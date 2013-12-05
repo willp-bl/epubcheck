@@ -54,6 +54,7 @@ import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.util.EPUBVersion;
 import com.adobe.epubcheck.util.Messages;
 import com.adobe.epubcheck.util.ResourceUtil;
@@ -159,7 +160,7 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 			if (encoding != null && !encoding.equals("UTF-8")
 					&& !encoding.equals("UTF-16")) {
 				report.error(resource, 0, 0, 
-						String.format(Messages.UTF_NOT_SUPPORTED, encoding));						
+						String.format(Messages.UTF_NOT_SUPPORTED, encoding), ReportEnum.ERR_TEXT_ENCODING_UNSUPPORTED);						
 			}
 			
 			InputSource ins = new InputSource(in);
@@ -167,12 +168,12 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 			parser.parse(ins, this);
 			
 		} catch (IOException e) {
-			report.error(null, 0, 0, "I/O error reading " + resource + ": " + e.getMessage());
+			report.error(null, 0, 0, "I/O error reading " + resource + ": " + e.getMessage(), ReportEnum.ERR_IO);
 		} catch (IllegalArgumentException e) {
 			report.error(null, 0, 0,
-					"could not parse " + resource + ": " + e.getMessage());
+					"could not parse " + resource + ": " + e.getMessage(), ReportEnum.ERR_EXCEPTION);
 		} catch (SAXException e) {
-			report.error(resource, 0, 0, e.getMessage());
+			report.error(resource, 0, 0, e.getMessage(), ReportEnum.ERR_XML_EXCEPTION);
 		} catch (NullPointerException e) {
 			// this happens for unresolved entities, reported in entityResolver
 			// code.
@@ -236,17 +237,17 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 
 	public void error(SAXParseException ex) throws SAXException {
 		report.error(resource, ex.getLineNumber(), ex.getColumnNumber(),
-				ex.getMessage());
+				ex.getMessage(), ReportEnum.ERR_XML_EXCEPTION);
 	}
 
 	public void fatalError(SAXParseException ex) throws SAXException {
 		report.error(resource, ex.getLineNumber(), ex.getColumnNumber(),
-				ex.getMessage());
+				ex.getMessage(), ReportEnum.ERR_XML_EXCEPTION);
 	}
 
 	public void warning(SAXParseException ex) throws SAXException {
 		report.warning(resource, ex.getLineNumber(), ex.getColumnNumber(),
-				ex.getMessage());
+				ex.getMessage(), ReportEnum.ERR_XML_EXCEPTION);
 	}
 
 	public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
@@ -467,7 +468,7 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 						) {
 					//for heritage content collections, dont warn about this, as its not explicitly forbidden by the spec					
 				} else {
-					report.error(resource, 0, 0, "Obsolete or irregular DOCTYPE statement. The DOCTYPE can be removed.");	
+					report.error(resource, 0, 0, "Obsolete or irregular DOCTYPE statement. The DOCTYPE can be removed.", ReportEnum.ERR_DOCTYPE_IRREGULAR);	
 				}
 								
 			}
@@ -487,10 +488,10 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 				if(publicId == null && (systemId == null || systemId.equals("about:legacy-compat"))) {
 					// we assume to have have <!DOCTYPE html> or <!DOCTYPE html SYSTEM "about:legacy-compat">					
 				} else {
-					report.error(resource, 0, 0, "Obsolete or irregular DOCTYPE statement. External DTD entities are not allowed. Use '" + complete + "' instead.");
+					report.error(resource, 0, 0, "Obsolete or irregular DOCTYPE statement. External DTD entities are not allowed. Use '" + complete + "' instead.", ReportEnum.ERR_DOCTYPE_IRREGULAR);
 				}
 			} else {
-				report.error(resource, 0, 0, "External DTD entities are not allowed. Remove the DOCTYPE.");	
+				report.error(resource, 0, 0, "External DTD entities are not allowed. Remove the DOCTYPE.", ReportEnum.ERR_DOCTYPE_EXTERNAL_DTD);	
 			}						
 		}
 
@@ -500,7 +501,7 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 	boolean matchDoctypeId(String expected, String given, String messageParam) {
 		if(given != null && !expected.equals(given)){
 			report.warning(resource, 0, 0, String.format(
-					Messages.IRREGULAR_DOCTYPE, given, messageParam));
+					Messages.IRREGULAR_DOCTYPE, given, messageParam), ReportEnum.ERR_DOCTYPE_IRREGULAR);
 			return false;
 		}
 		return true;
@@ -509,7 +510,7 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 	public void startEntity(String ent) throws SAXException {
 		if (!entities.contains(ent) && !ent.equals("[dtd]"))
 			report.error(resource, getLineNumber(), getColumnNumber(),
-					"Entity '" + ent + "' is undeclared");
+					"Entity '" + ent + "' is undeclared", ReportEnum.ERR_ENTITY_UNDECLARED);
 	}
 
 	public void attributeDecl(String name, String name2, String type,
@@ -523,7 +524,7 @@ public class XMLParser extends DefaultHandler implements LexicalHandler, DeclHan
 			throws SAXException {
 		if (version == EPUBVersion.VERSION_3) {
 			report.error(resource, getLineNumber(), getColumnNumber(),
-					Messages.EXTERNAL_ENTITIES_NOT_ALLOWED + name);
+					Messages.EXTERNAL_ENTITIES_NOT_ALLOWED + name, ReportEnum.ERR_ENTITY_EXTERNAL);
 			return;
 		}
 		entities.add(name);

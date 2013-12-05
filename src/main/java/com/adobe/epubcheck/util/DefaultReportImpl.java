@@ -22,6 +22,7 @@
 package com.adobe.epubcheck.util;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 
 public class DefaultReportImpl implements Report {
 
@@ -42,7 +43,7 @@ public class DefaultReportImpl implements Report {
 	public DefaultReportImpl(String ePubName, String info, boolean quiet) {
 		this.quiet = quiet;
 		this.ePubName = ePubName;
-		if (info != null) warning("", 0, 0, info);
+		if (info != null) warning("", 0, 0, info, ReportEnum.NULL);
 		errorCount = 0;
 		warningCount = 0;
 		exceptionCount = 0;
@@ -54,7 +55,7 @@ public class DefaultReportImpl implements Report {
 		return message.replaceAll("[\\s]+", " ");
 	}
 
-	public void error(String resource, int line, int column, String message) {
+	public void error(String resource, int line, int column, String message, ReportEnum e) {
 		errorCount++;
 		message = fixMessage(message);
 		System.err.println("ERROR: "
@@ -65,7 +66,7 @@ public class DefaultReportImpl implements Report {
 				+ message);
 	}
 
-	public void warning(String resource, int line, int column, String message) {
+	public void warning(String resource, int line, int column, String message, ReportEnum e) {
 		warningCount++;
 		message = fixMessage(message);
 		System.err.println("WARNING: "

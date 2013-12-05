@@ -39,6 +39,7 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.util.EPUBVersion;
 import com.adobe.epubcheck.util.FeatureEnum;
 import com.adobe.epubcheck.util.InvalidVersionException;
@@ -125,7 +126,7 @@ public class VersionRetriever implements EntityResolver, ErrorHandler {
 			else
 				report.exception(path, e);
 		} catch (IOException e) {
-			report.error(path, 0, 0, e.getMessage());
+			report.error(path, 0, 0, e.getMessage(), ReportEnum.ERR_IO);
 		} 
 		throw new InvalidVersionException(
 				InvalidVersionException.VERSION_NOT_FOUND);

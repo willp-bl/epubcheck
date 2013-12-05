@@ -22,6 +22,7 @@
 
 package com.adobe.epubcheck.dtbook;
 
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.opf.XRefChecker;
 import com.adobe.epubcheck.ops.OPSHandler;
 import com.adobe.epubcheck.util.FeatureEnum;
@@ -76,7 +77,7 @@ public class DTBookHandler implements XMLHandler {
 								parser.getLineNumber(),
 								parser.getColumnNumber(),
 								"use of non-registered URI schema type in href: "
-										+ uri);
+										+ uri, ReportEnum.WARN_URI_SCHEMA_NOT_REGISTERED);
 						uri = null;
 					}
 				}

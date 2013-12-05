@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.util.EPUBVersion;
 
 
@@ -69,7 +70,7 @@ public class XmlReportImpl implements Report {
     }
     
     @Override
-    public void error(String resource, int line, int column, String message) {
+    public void error(String resource, int line, int column, String message, ReportEnum e) {
         errors.add((resource == null ? "" : "/" + resource) +
                 (line <= 0 ? "" : "(" + line + ")") + ": " + message );
 
@@ -83,7 +84,7 @@ public class XmlReportImpl implements Report {
     }
 
     @Override
-    public void warning(String resource, int line, int column, String message) {
+    public void warning(String resource, int line, int column, String message, ReportEnum e) {
         warns.add((resource == null ? "" : "/" + resource) +
                 (line <= 0 ? "" : "(" + line + ")") + ": " + message );
 

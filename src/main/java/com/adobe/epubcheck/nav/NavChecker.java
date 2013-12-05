@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.opf.DocumentValidator;
@@ -68,7 +69,7 @@ public class NavChecker implements ContentChecker, DocumentValidator {
 	public NavChecker(GenericResourceProvider resourceProvider, Report report,
 			String path, String mimeType, EPUBVersion version) {
 		if (version == EPUBVersion.VERSION_2)
-			report.error(path, 0, 0, Messages.NAV_NOT_SUPPORTED);
+			report.error(path, 0, 0, Messages.NAV_NOT_SUPPORTED, ReportEnum.ERR_NAV_FILE_UNSUPPORTED);
 		this.report = report;
 		this.path = path;
 		this.resourceProvider = resourceProvider;
@@ -80,7 +81,7 @@ public class NavChecker implements ContentChecker, DocumentValidator {
 	public NavChecker(OCFPackage ocf, Report report, String path,
 			String mimeType, String properties, XRefChecker xrefChecker, EPUBVersion version) {
 		if (version == EPUBVersion.VERSION_2)
-			report.error(path, 0, 0, Messages.NAV_NOT_SUPPORTED);
+			report.error(path, 0, 0, Messages.NAV_NOT_SUPPORTED, ReportEnum.ERR_NAV_FILE_UNSUPPORTED);
 		this.ocf = ocf;
 		this.report = report;
 		this.path = path;
@@ -93,10 +94,10 @@ public class NavChecker implements ContentChecker, DocumentValidator {
 
 	public void runChecks() {
 		if (!ocf.hasEntry(path))
-			report.error(null, 0, 0, String.format(Messages.MISSING_FILE, path));
+			report.error(null, 0, 0, String.format(Messages.MISSING_FILE, path), ReportEnum.ERR_FILE_MISSING);
 		else if (!ocf.canDecrypt(path))
 			report.error(null, 0, 0, "Nav file " + path
-					+ " cannot be decrypted");
+					+ " cannot be decrypted", ReportEnum.ERR_FILE_ENCRYPTED);
 		else {
 			validate();
 		}

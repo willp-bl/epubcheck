@@ -29,6 +29,7 @@ import java.net.URL;
 
 import org.junit.Test;
 
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.opf.VersionRetriever;
 
 public class ResourceUtilTest {
@@ -63,7 +64,7 @@ public class ResourceUtilTest {
 					.retrieveOpfVersion(resourceProvider.getInputStream(basepath
 							+ fileName));
 		} catch (InvalidVersionException e) {
-			testReport.error(fileName, -1, -1, e.getMessage());
+			testReport.error(fileName, -1, -1, e.getMessage(), ReportEnum.ERR_EXCEPTION);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.opf.XRefChecker;
@@ -62,10 +63,10 @@ public class NCXChecker implements ContentChecker {
 
 	public void runChecks() {
 		if (!ocf.hasEntry(path)) {
-			report.error(null, 0, 0, "NCX file " + path + " is missing");
+			report.error(null, 0, 0, "NCX file " + path + " is missing", ReportEnum.ERR_FILE_MISSING);
 		} else if (!ocf.canDecrypt(path))  {
 			report.error(null, 0, 0, "NCX file " + path
-					+ " cannot be decrypted");
+					+ " cannot be decrypted", ReportEnum.ERR_FILE_ENCRYPTED);
 		} else {
 			// relaxng
 			XMLParser ncxParser = null;
@@ -82,7 +83,7 @@ public class NCXChecker implements ContentChecker {
 				
 				if (ocf.getUniqueIdentifier() != null && !ocf.getUniqueIdentifier().equals(ncxHandler.getUid())) {
 					report.warning(path, 0, 0, 
-						String.format(Messages.NCX_BAD_UID, ncxHandler.getUid(), ocf.getUniqueIdentifier()));
+						String.format(Messages.NCX_BAD_UID, ncxHandler.getUid(), ocf.getUniqueIdentifier()), ReportEnum.ERR_NCX_BAD_UID);
 				}
 
 			} catch (IOException e) {
@@ -111,7 +112,7 @@ public class NCXChecker implements ContentChecker {
 						-1,
 						0,
 						"Failed performing NCX Schematron tests: "
-								+ t.getMessage());
+								+ t.getMessage(), ReportEnum.ERR_NCX_SCHEMATRON_TEST_FAILURE);
 			}finally{
 				try{
 					in.close();

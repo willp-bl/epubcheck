@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.opf.DocumentValidator;
@@ -77,9 +78,9 @@ public class OverlayChecker implements ContentChecker, DocumentValidator {
 
 	public void runChecks() {
 		if (!ocf.hasEntry(path))
-			report.error(null, 0, 0, "File " + path + " is missing");
+			report.error(null, 0, 0, "File " + path + " is missing", ReportEnum.ERR_FILE_MISSING);
 		else if (!ocf.canDecrypt(path))
-			report.error(null, 0, 0, "File " + path + " cannot be decrypted");
+			report.error(null, 0, 0, "File " + path + " cannot be decrypted", ReportEnum.ERR_FILE_ENCRYPTED);
 		else {
 			validate();
 		}
@@ -102,7 +103,7 @@ public class OverlayChecker implements ContentChecker, DocumentValidator {
 			overlayParser.process();
 		} catch (IOException e) {
 			report.error(path, -1, -1,
-					String.format(Messages.MISSING_FILE, path));
+					String.format(Messages.MISSING_FILE, path), ReportEnum.ERR_FILE_MISSING);
 		}finally {
 			try {
 				in.close();

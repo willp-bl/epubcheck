@@ -12,6 +12,7 @@ import org.idpf.epubcheck.util.css.CssGrammar.CssSelector;
 import org.idpf.epubcheck.util.css.CssGrammar.CssURI;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.opf.OPFChecker;
 import com.adobe.epubcheck.opf.OPFChecker30;
 import com.adobe.epubcheck.opf.XRefChecker;
@@ -47,7 +48,7 @@ public class CSSHandler implements CssContentHandler, CssErrorHandler {
 
 	@Override
 	public void error(CssException e) throws CssException {
-		report.warning(path, e.getLocation().getLine() + lineOffset, -1, e.getMessage());		
+		report.warning(path, e.getLocation().getLine() + lineOffset, -1, e.getMessage(), ReportEnum.WARN_CSS_EXCEPTION);		
 	}
 
 	@Override
@@ -124,12 +125,12 @@ public class CSSHandler implements CssContentHandler, CssErrorHandler {
 				if(cns != null) {
 					String value = cns.toCssString();
 					if(value!=null && value.equalsIgnoreCase("fixed")) {
-						report.warning(path, line , col, Messages.POSITION_FIXED);								
+						report.warning(path, line , col, Messages.POSITION_FIXED, ReportEnum.WARN_CSS_FIXED_POSITION);								
 					}	
 				}
 				
 			} else if (propertyName == "direction" || propertyName == "unicode-bidi") {
-				report.error(path, line, col, String.format(Messages.CSS_PROPERTY_NOT_ALLOWED, propertyName));						
+				report.error(path, line, col, String.format(Messages.CSS_PROPERTY_NOT_ALLOWED, propertyName), ReportEnum.WARN_CSS_PROPERTY_NOT_ALLOWED);						
 			}
 		}
 		
@@ -164,7 +165,7 @@ public class CSSHandler implements CssContentHandler, CssErrorHandler {
 								report.warning(path, declaration.getLocation().getLine(), 
 				                		   declaration.getLocation().getColumn(), 
 				                		   String.format(Messages.CSS_FONT_MIMETYPE, 
-				                				   fontUri, fontMimeType));
+				                				   fontUri, fontMimeType), ReportEnum.WARN_CSS_NON_STANDARD_FONT_TYPE);
 							}						
 						} else {
 							//errors sb reported elsewhere
@@ -188,7 +189,7 @@ public class CSSHandler implements CssContentHandler, CssErrorHandler {
 			String resolved = PathUtil.resolveRelativeReference(path, relativeRef, null);									
 			xrefChecker.registerReference(path, line + lineOffset, col, resolved, XRefChecker.RT_GENERIC);			
 		} else {
-			report.error(path, line + lineOffset, col, Messages.NULL_REF);
+			report.error(path, line + lineOffset, col, Messages.NULL_REF, ReportEnum.ERR_NULL_REFERENCE);
 		}
 
 	}

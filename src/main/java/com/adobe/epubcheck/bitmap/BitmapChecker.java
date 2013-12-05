@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.ContentChecker;
 import com.adobe.epubcheck.util.CheckUtil;
@@ -61,15 +62,15 @@ public class BitmapChecker implements ContentChecker {
 			passed = true;
 		if (!passed)
 			report.error(null, 0, 0, "The file " + path
-					+ " does not appear to be of type " + mimeType);
+					+ " does not appear to be of type " + mimeType, ReportEnum.ERR_MIMETYPE_INCORRECT_FOR_IMAGE);
 	}
 
 	public void runChecks() {
 		if (!ocf.hasEntry(path))
-			report.error(null, 0, 0, "image file " + path + " is missing");
+			report.error(null, 0, 0, "image file " + path + " is missing", ReportEnum.ERR_IMAGE_FILE_MISSING);
 		else if (!ocf.canDecrypt(path))
 			report.error(null, 0, 0, "image file " + path
-					+ " cannot be decrypted");
+					+ " cannot be decrypted", ReportEnum.ERR_FILE_ENCRYPTED);
 		else {
 			InputStream in = null;
 			try {
@@ -78,12 +79,12 @@ public class BitmapChecker implements ContentChecker {
 				int rd = CheckUtil.readBytes(in, header, 0, 4);
 				if (rd < 4) {
 					report.error(null, 0, 0, "image file " + path
-							+ " is too short");
+							+ " is too short", ReportEnum.ERR_IMAGE_FILE_TOO_SHORT);
 				} else {
 					checkHeader(header);
 				}
 			} catch (IOException e) {
-				report.error(null, 0, 0, "I/O error reading " + path);
+				report.error(null, 0, 0, "I/O error reading " + path, ReportEnum.ERR_IO);
 			} finally {
 				try {
 					in.close();

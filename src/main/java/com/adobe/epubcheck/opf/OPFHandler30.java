@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.util.EPUBVersion;
 import com.adobe.epubcheck.util.FeatureEnum;
@@ -174,7 +175,7 @@ public class OPFHandler30 extends OPFHandler {
 				href = PathUtil.resolveRelativeReference(path, href, null);
 			} catch (IllegalArgumentException ex) {
 				report.error(path, parser.getLineNumber(),
-						parser.getColumnNumber(), ex.getMessage());
+						parser.getColumnNumber(), ex.getMessage(), ReportEnum.ERR_EXCEPTION);
 				href = null;
 			}
 		}

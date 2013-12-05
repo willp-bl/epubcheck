@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.ocf.OCFPackage;
 import com.adobe.epubcheck.opf.OPFChecker;
 import com.adobe.epubcheck.opf.OPFChecker30;
@@ -66,7 +67,7 @@ public class OPSHandler30 extends OPSHandler {
 		prefix = prefix.trim();
 		if (!prefixSet.contains(prefix)) {
 			report.error(path, parser.getLineNumber(),
-					parser.getColumnNumber(), "Undecleared prefix: " + prefix);
+					parser.getColumnNumber(), "Undecleared prefix: " + prefix, ReportEnum.ERR_XML_UNDECLARED_PREFIX);
 			return false;
 		}
 		return true;
@@ -275,7 +276,7 @@ public class OPSHandler30 extends OPSHandler {
 				&& !type.equals(xrefChecker.getMimeType(data)))
 			report.error(path, parser.getLineNumber(),
 					parser.getColumnNumber(),
-					"Object type and the item media-type declared in manifest, do not match");
+					"Object type and the item media-type declared in manifest, do not match", ReportEnum.ERR_MIMETYPE_CONFLICT);
 
 		if (type != null) {
 			if (!mimeType.equals("image/svg+xml")

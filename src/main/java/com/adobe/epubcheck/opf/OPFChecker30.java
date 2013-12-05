@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.adobe.epubcheck.api.Report;
+import com.adobe.epubcheck.api.ReportEnum;
 import com.adobe.epubcheck.bitmap.BitmapCheckerFactory;
 import com.adobe.epubcheck.css.CSSCheckerFactory;
 import com.adobe.epubcheck.dtbook.DTBookCheckerFactory;
@@ -110,7 +111,7 @@ public class OPFChecker30 extends OPFChecker implements DocumentValidator {
 			OPFItem fallbackItem = opfHandler.getItemById(fallback);
 			if (fallbackItem == null) {
 				report.error(path, item.getLineNumber(), item.getColumnNumber(),
-						Messages.OPF_FALLBACK_ITEM_NOT_FOUND);
+						Messages.OPF_FALLBACK_ITEM_NOT_FOUND, ReportEnum.ERR_OPF_FALLBACK_MISSING);
 			}
 		}
 
